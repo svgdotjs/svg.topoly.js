@@ -9,6 +9,7 @@
         , length = 0
         , points = []
 				, segments
+				, segmentsQueue
 				, x = 0
 				, y = 0;
 
@@ -21,14 +22,14 @@
 			
       // calculate sample distance
 			if(sample.unit === '%') {
-					distance = total * sample.value; // sample distance in %
+				distance = total * sample.value; // sample distance in %
 			} else if (sample.unit === 'px') {
 				distance = sample.value; // fixed sample distance in px
 			} else {
 				distance = total / sample.value; // specific number of samples
 			}
-			
 			segments = this.value;
+			segmentsQueue = segments.concat();
 			
 			var addPoint = function(px,py) {
 				var lastPoint = points[points.length-1];
@@ -77,6 +78,9 @@
 				if (segment != lastSegment){
 					// add the segment we just left
 					if(lastSegment !== undefined)	addSegmentPoint(lastSegment);
+					while (segmentsQueue.length && segmentsQueue[0]!=segment) {
+						addSegmentPoint(segmentsQueue.shift());
+					}
 					lastSegment = segment;
 				}
 	
@@ -96,9 +100,7 @@
       }
 			
 			// add remaining segments we didn't pass while sampling
-			for (var i=segmentIndex,len=segments.length;i<len;++i) {
-				addSegmentPoint(segments[i]);
-			}
+			for (var i=0,len=segmentsQueue.length;i<len;++i) addSegmentPoint(segmentsQueue[i]);
   		
       // send out as point array
       return new SVG.PointArray(points)
