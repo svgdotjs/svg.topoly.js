@@ -23,9 +23,9 @@
 			if(sample.unit === '%') {
 					distance = total * sample.value; // sample distance in %
 			} else if (sample.unit === 'px') {
-				sample.value; // fixed sample distance in px
+				distance = sample.value; // fixed sample distance in px
 			} else {
-				total / sample.value; // specific number of samples
+				distance = total / sample.value; // specific number of samples
 			}
 			
 			segments = this.value;
