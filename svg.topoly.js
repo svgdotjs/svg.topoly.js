@@ -129,5 +129,24 @@
       return poly
     }
   })
+	
+	SVG.extend(SVG.Parent, {
+		// Convert element to path
+		toPoly: function(sample, replace) {
+			
+			// cloning children array so that we don't touch the paths we create
+			var children = this.node.children;
+			var childrenClone = [];
+			for (var i = 0; i < children.length; i++) {
+				childrenClone.push(children[i].instance);
+			}
+			for (var i in childrenClone) {
+				childrenClone[i].toPoly(replace);
+			}
+			
+			return this
+		}
+
+	})
 
 }).call(this)
