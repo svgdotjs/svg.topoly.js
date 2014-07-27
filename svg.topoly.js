@@ -8,7 +8,9 @@
       var total, point, distance
         , length = 0
         , points = []
-				, segments;
+				, segments
+				, x = 0
+				, y = 0;
 
       // parse sample value
       sample = new SVG.Number(sample || '1%');
@@ -28,15 +30,17 @@
 			
 			segments = this.value;
 			
-			var addPoint = function(x,y) {
+			var addPoint = function(px,py) {
 				var lastPoint = points[points.length-1];
 				// When the last point doesn't equal the current point add the current point
-				if (!lastPoint || x!=lastPoint[0] || y!=lastPoint[1]) {
-					points.push([x,y]);
+				if (!lastPoint || px!=lastPoint[0] || py!=lastPoint[1]) {
+					points.push([px,py]);
+					x = px;
+					y = py;
 				}
 			}
 			var addSegmentPoint = function(segment){
-				var x, y, type = segment[0];
+				var type = segment[0];
 				if(type === "Z") return;
 				switch(type) {
 					case "M":
