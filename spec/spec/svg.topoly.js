@@ -6,7 +6,7 @@ describe('svg.topath.js', function() {
   
   describe('toPath()', function() {
     
-		var path
+    var path
       , data = new SVG.PathArray('M50,50 L100,100 L100,100')
 
     beforeEach(function() {
@@ -17,7 +17,7 @@ describe('svg.topath.js', function() {
       path = draw.path(data)
       expect(path.toPoly() instanceof SVG.Polyline).toBeTruthy()
     })
-		it('generates a polygon with a closed path', function() {
+    it('generates a polygon with a closed path', function() {
       path = draw.path(data + 'Z')
       expect(path.toPoly() instanceof SVG.Polygon).toBeTruthy()
     })
@@ -39,8 +39,8 @@ describe('svg.topath.js', function() {
         expect(path.toPoly(100).array.value.length).toBe(100)
       })
     })
-		
+    
   })
-	
+  
 })
 

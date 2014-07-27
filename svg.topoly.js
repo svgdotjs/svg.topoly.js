@@ -59,7 +59,7 @@
 
       // define type
       type = /z\s+$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
-		  
+      
       // create poly*
       poly = this.parent[type](this.array.toPoly(sample))
 
