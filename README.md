@@ -22,7 +22,7 @@ var polygon = path.toPoly()
 ```
 
 ### Samples
-The default sample value is '1%'. This means that every `1%` of the total length of the path, a point will be registered. In practice this will mean `100 + 1` points as an extra point with the value of the total length of the path will be added as well.
+The default sample value is `'1%'`. This means that every `1%` of the total length of the path, a point will be registered. In practice this will mean `100 + 1` points as an extra point with the value of the total length of the path will be added as well.
 
 There are three ways to approach the sample value.
 
