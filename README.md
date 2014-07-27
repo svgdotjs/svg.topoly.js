@@ -1,4 +1,4 @@
-# svg.topath.js
+# svg.topoly.js
 
 This is a plugin for the [SVG.js](http://svgjs.com) library to convert paths to polygons or polylines.
 
@@ -76,3 +76,4 @@ var poly = path.toPoly('1%')
 ### To-do
 - add support for merged paths (`M..Z M..Z M..Z`)
 - add sharp corner and straight line detection
+- add specs
