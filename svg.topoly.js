@@ -90,6 +90,7 @@
 						case "T":
 						case "S":
 						case "Q":	
+						case "A":	
 							point = SVG.parser.path.getPointAtLength(length);
 							addPoint(point.x,point.y);
 							break;
