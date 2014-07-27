@@ -141,7 +141,7 @@
 				childrenClone.push(children[i].instance);
 			}
 			for (var i in childrenClone) {
-				childrenClone[i].toPoly(replace);
+				childrenClone[i].toPoly(sample,replace);
 			}
 			
 			return this
