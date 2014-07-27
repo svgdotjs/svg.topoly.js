@@ -50,8 +50,8 @@
       var poly, type
 
       // define type
-      type = /z$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
-
+      type = /z\s*$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
+			
       // create poly*
       poly = this.parent[type](this.array.toPoly(sample))
 
