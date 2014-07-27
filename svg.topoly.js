@@ -19,11 +19,19 @@
       total = SVG.parser.path.getTotalLength()
 
       // calculate sample distance
-      distance = sample.unit == '%' ?
-        total * sample.value : // sample distance in %
-      sample.unit == 'px' ?
-        sample.value :         // fixed sample distance in px
-        total / sample.value   // specific number of samples
+      if (sample.unit == '%') {
+        // sample distance in %
+        distance = total * sample.value
+      } else if (sample.unit == 'px') {
+        // fixed sample distance in px
+        distance = sample.value
+      } else {
+        // specific number of samples
+        distance = total / sample.value
+
+        // remove on instance
+        total -= 1
+      }
 
       // gather points
       while (length < total) {
@@ -50,8 +58,8 @@
       var poly, type
 
       // define type
-      type = /z\s*$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
-			
+      type = /z\s+$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
+		  
       // create poly*
       poly = this.parent[type](this.array.toPoly(sample))
 
