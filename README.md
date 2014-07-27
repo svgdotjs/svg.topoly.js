@@ -64,12 +64,12 @@ path.toPoly('0.3%', true)
 ```
 
 ### SVG.PathArray
-The `toPoly()` method on a `SVG.Path` is a proxy to the same method on `SVG.PathArray`. This makes it possible to convert path data to point data, even without every drawing a shape:
+The `toPoly()` method on a `SVG.Path` is a proxy to the same method on `SVG.PathArray`. This makes it possible to convert path data to point data, even without ever drawing a shape:
 
 ```javascript
-var path = new SVG.PathArray(data)
+var pathArray = new SVG.PathArray(data)
 
-var poly = path.toPoly('1%')
+var pointArray = path.toPoly('1%')
 // -> returns an instance of SVG.PointArray
 ```
 
