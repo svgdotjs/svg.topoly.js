@@ -1,46 +1,84 @@
-describe('svg.topath.js', function() {
+describe('toPoly()', function() {
   
   afterEach(function() {
     draw.clear()
   })
   
-  describe('toPath()', function() {
+  describe('from path', function() {
     
     var path
-      , data = new SVG.PathArray('M50,50 L100,100 L100,100')
+      , path2
+      , curvedPath
+      , pathData = 'M50,50 L100,50 L100,100'
 
     beforeEach(function() {
-      path = draw.path(data)
+      path       = draw.path(pathData)
+      path2      = draw.path(pathData + 'Z')
+      curvedPath = draw.path('M34.5,45.5 c0,0,38-43,71-18 s31,81 20,78 c0,0,38-43,71-18 s31,81-20,78 -16-47-16-47')
     })
 
-    it('generates a polyline with an unclosed path', function() {
-      path = draw.path(data)
-      expect(path.toPoly() instanceof SVG.Polyline).toBeTruthy()
+    it('generates a polyline', function() {
+      expect(path.toPoly() instanceof SVG.Polyline).toBe(true)
     })
-    it('generates a polygon with a closed path', function() {
-      path = draw.path(data + 'Z')
-      expect(path.toPoly() instanceof SVG.Polygon).toBeTruthy()
+    it('generates a polygon', function() {
+      expect(path2.toPoly() instanceof SVG.Polygon).toBe(true)
     })
-
-    describe('with a value of 2%', function() {
-      it('generates 52 points', function() {
-        expect(path.toPoly('2%').array.value.length).toBe(52)
-      })
+    it('generates a polyline from curved path', function() {
+      expect(curvedPath.toPoly() instanceof SVG.Polyline).toBe(true)
     })
-
-    describe('with a value of 3px', function() {
-      it('generates 25 points', function() {
-        expect(path.toPoly('3px').array.value.length).toBe(25)
-      })
+    it('generates a polyline and replace', function() {
+      path.toPoly('1%',true);
+      expect(path.parent === null).toBe(true);
     })
-
-    describe('with a numerical value of 100', function() {
-      it('generates 100 points', function() {
-        expect(path.toPoly(100).array.value.length).toBe(100)
-      })
+    it('generates a polyline with a samplerate of 5%', function() {
+      expect(path.toPoly('5%') instanceof SVG.Polyline).toBe(true)
+    })
+    it('generates a polyline with a samplerate of 5px', function() {
+      expect(path.toPoly('5px') instanceof SVG.Polyline).toBe(true)
+    })
+    it('generates a polyline with a samplerate of 5', function() {
+      expect(path.toPoly('5') instanceof SVG.Polyline).toBe(true)
     })
     
   })
   
+  describe('recursive from group', function() {
+    var group;
+    beforeEach(function() {
+      group = draw.group();
+      group.path('M50,50 L100,50,100,100');
+      group.path('m0,50 l100,50,100,100');
+      var subgroup = group.group();
+      subgroup.path('M34.5,45.5 c0,0,38-43,71-18 s31,81 20,78 c0,0,38-43,71-18 s31,81-20,78 -16-47-16-47');
+    })
+    
+    it('generates polylines', function() {
+      group.toPoly();
+      expect(getStructure(group.node)).toEqual({type:'g',
+                                                children:[
+                                                  {type:'path'},
+                                                  {type:'polyline'},
+                                                  {type:'path'},
+                                                  {type:'polyline'},
+                                                  {type:'g',
+                                                   children:[
+                                                     {type:'path'},
+                                                     {type:'polyline'}
+                                                   ]}
+                                                ]});
+    })
+    it('generates polylines and replaces', function() {
+      group.toPoly('1%',true);
+      expect(getStructure(group.node)).toEqual({type:'g',
+                                                children:[
+                                                  {type:'polyline'},
+                                                  {type:'polyline'},
+                                                  {type:'g',
+                                                   children:[
+                                                     {type:'polyline'}
+                                                   ]}
+                                                ]});
+    })
+  })
+  
 })
-

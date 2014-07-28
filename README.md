@@ -75,5 +75,6 @@ var pointArray = path.toPoly('1%')
 
 ### To-do
 - add support for merged paths (`M..Z M..Z M..Z`)
-- add sharp corner and straight line detection
-- add specs
+
+### Acknowledgements
+Thanks to [Peter Uithoven](https://github.com/peteruithoven) for adding straight line detection and recruisive toPoly.
