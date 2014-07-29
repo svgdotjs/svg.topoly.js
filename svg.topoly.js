@@ -113,12 +113,15 @@
     // Convert path to poly*
     toPoly: function(sample, replace) {
       var poly, type
+			, trans = this.trans;
 
       // define type
       type = /z\s*$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
 			
       // create poly*
       poly = this.parent[type](this.array.toPoly(sample))
+      	.attr(normaliseAttributes(this.attr()))
+				.transform(trans);
 
       // insert after myself
       this.after(poly)
@@ -149,5 +152,14 @@
 		}
 
 	})
+
+	// Normalise attributes
+	function normaliseAttributes(attr) {
+		for (var a in attr)
+			if (!/fill|stroke|opacity/.test(a))
+				delete attr[a]
+
+		return attr
+	}
 
 }).call(this)

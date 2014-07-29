@@ -17,10 +17,9 @@ describe('toPoly()', function() {
     beforeEach(function() {
       path = draw.path(pathData);
       path2 = draw.path(pathData+"Z");
-			curvedPath = draw.path('M34.5,45.5 c0,0,38-43,71-18 s31,81 20,78 c0,0,38-43,71-18 s31,81-20,78 -16-47-16-47');
+			curvedPath = draw.path('M34.5,45.5 c0,0,38-43,71-18 s31,81 20,78 c0,0,38-43,71-18 s31,81-20,78 -16-47-16-47').translate(-10,-20);
     })
 		
-
     it('generates a polyline', function() {
       expect(path.toPoly() instanceof SVG.Polyline).toBe(true)
     })
@@ -43,7 +42,11 @@ describe('toPoly()', function() {
 		it('generates a polyline with a samplerate of 5', function() {
       expect(path.toPoly("5") instanceof SVG.Polyline).toBe(true)
     })
-		
+		it('generates a polyline and includes translate', function() {
+			var poly = curvedPath.toPoly();
+			expect(	poly.trans.x === curvedPath.trans.x && 
+							poly.trans.y === curvedPath.trans.y).toBe(true)
+    })
   })
 	
 	describe('recursive from group', function() {
