@@ -139,13 +139,13 @@
     // Convert path to poly
     toPoly: function(sample, replace) {
       var poly, type
-      , trans = this.trans
+      , trans = this.transform()
 
       // define type
       type = /z\s*$/i.test(this.attr('d')) ? 'polygon' : 'polyline'
       
       // create poly
-      poly = this.parent[type](this.array.toPoly(sample))
+      poly = this.parent()[type](this.array().toPoly(sample))
         .attr(normaliseAttributes(this.attr()))
         .transform(trans)
 
