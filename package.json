@@ -1,7 +1,7 @@
 {
   "name": "@svgdotjs/svg.topoly.js",
-  "version": "1.0.0",
-  "description": "An extension for svg.js to convert shapes to paths",
+  "version": "1.0.1",
+  "description": "An extension for svg.js to convert shapes to polygons",
   "main": "svg.topoly.node.js",
   "unpkg": "dist/svg.topoly.min.js",
   "jsdelivr": "dist/svg.topoly.min.js",
@@ -24,9 +24,6 @@
     }
   ],
   "homepage": "https://github.com/svgdotjs/svg.topoly.js",
-  "files": [
-    "dist/"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/svgdotjs/svg.topoly.js.git"
