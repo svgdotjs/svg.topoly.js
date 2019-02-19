@@ -1,17 +1,18 @@
 {
   "name": "@svgdotjs/svg.topoly.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An extension for svg.js to convert shapes to polygons",
   "main": "svg.topoly.node.js",
   "unpkg": "dist/svg.topoly.min.js",
   "jsdelivr": "dist/svg.topoly.min.js",
-  "browser": "dist/svg.topoly.min.js",
+  "browser": "src/svg.topoly.js",
   "module": "src/svg.topoly.js",
   "keywords": [
     "svg.js"
   ],
   "bugs": "https://github.com/svgdotjs/svg.topoly.js/issues",
   "license": "MIT",
+  "typings": "./svg.topoly.js.d.ts",
   "author": {
     "name": "Wout Fierens"
   },
