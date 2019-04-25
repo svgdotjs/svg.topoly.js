@@ -1,12 +1,17 @@
 {
   "name": "@svgdotjs/svg.topoly.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An extension for svg.js to convert shapes to polygons",
-  "main": "svg.topoly.node.js",
+  "main": "dist/svg.topoly.node.js",
   "unpkg": "dist/svg.topoly.min.js",
   "jsdelivr": "dist/svg.topoly.min.js",
   "browser": "src/svg.topoly.js",
   "module": "src/svg.topoly.js",
+  "files": [
+    "/dist",
+    "/src",
+    "/svg.topoly.js.d.ts"
+  ],
   "keywords": [
     "svg.js"
   ],
