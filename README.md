@@ -72,6 +72,18 @@ path.toPoly(400)
 ### Types
 If a path is closed (ending with a `z`) a `SVG.Polygon` will be generated, otherwise a `SVG.Polyline`.
 
+### Merged paths
+If the path data contains more than one subpath (e.g. `M..Z M..Z`), each subpath is
+converted to its own polygon / polyline. The result is then wrapped in a `<g>` so the
+converted shape can be moved and manipulated as a whole:
+
+```javascript
+var group = path.toPoly()
+// -> SVG.G containing one polygon/polyline per subpath
+```
+
+A single subpath keeps the previous behavior and returns a plain `SVG.Polygon` / `SVG.Polyline`.
+
 ### SVG.PathArray
 The `toPoly()` method on a `SVG.Path` is a proxy to the same method on `SVG.PathArray`. This makes it possible to convert path data to point data, even without ever drawing a shape:
 
