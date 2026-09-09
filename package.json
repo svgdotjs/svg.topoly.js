@@ -1,16 +1,33 @@
 {
   "name": "@svgdotjs/svg.topoly.js",
-  "version": "1.0.3",
+  "version": "3.0.0",
   "description": "An extension for svg.js to convert shapes to polygons",
-  "main": "dist/svg.topoly.node.js",
-  "unpkg": "dist/svg.topoly.min.js",
-  "jsdelivr": "dist/svg.topoly.min.js",
-  "browser": "src/svg.topoly.js",
+  "type": "module",
+  "main": "dist/svg.topoly.js",
   "module": "src/svg.topoly.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./svg.topoly.js.d.ts",
+        "default": "./src/svg.topoly.js"
+      },
+      "require": {
+        "types": "./svg.topoly.js.d.cts",
+        "default": "./src/svg.topoly.js"
+      },
+      "browser": {
+        "types": "./svg.topoly.js.d.ts",
+        "default": "./src/svg.topoly.js"
+      }
+    }
+  },
+  "unpkg": "dist/svg.topoly.js",
+  "jsdelivr": "dist/svg.topoly.js",
   "files": [
     "/dist",
     "/src",
-    "/svg.topoly.js.d.ts"
+    "/svg.topoly.js.d.ts",
+    "/svg.topoly.js.d.cts"
   ],
   "keywords": [
     "svg.js"
@@ -35,45 +52,22 @@
     "url": "https://github.com/svgdotjs/svg.topoly.js.git"
   },
   "scripts": {
-    "build": "npm run fix && npm run rollup",
-    "fix": "npx eslint ./src --fix",
-    "lint": "npx eslint ./src",
-    "rollup": "npx rollup -c .config/rollup.config.js",
-    "zip": "zip -j dist/svg.topoly.js.zip -- LICENSE README.md dist/svg.topoly.js dist/svg.topoly.js.map dist/svg.topoly.min.js dist/svg.topoly.min.js.map",
+    "build": "npm run fix && vite build",
+    "fix": "npx eslint --fix",
+    "lint": "npx eslint ./src ./spec --ext .js,.mjs",
     "prepublishOnly": "rm -rf ./dist && npm run build",
-    "postpublish": "npm run zip"
-  },
-  "engines": {
-    "node": ">= 0.8.0"
+    "test": "node --test spec/svg.topoly.test.mjs"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-external-helpers": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/polyfill": "^7.2.5",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/runtime": "^7.2.0",
-    "@babel/runtime-corejs2": "^7.2.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.12.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "jasmine": "^3.3.0",
-    "jasmine-core": "^3.3.0",
-    "rollup": "^1.1.0",
-    "rollup-plugin-babel": "^4.3.1",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-filesize": "^6.0.0",
-    "rollup-plugin-multi-entry": "^2.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-terser": "^4.0.2",
-    "rollup-plugin-uglify": "^6.0.1",
-    "rollup-plugin-uglify-es": "0.0.1"
+    "eslint": "^8.36.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.5",
+    "svgdom": "^0.1.29",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1"
   },
-  "dependencies": {
-    "@svgdotjs/svg.js": "^3.0.10"
+  "peerDependencies": {
+    "@svgdotjs/svg.js": "^3.2.4"
   }
 }

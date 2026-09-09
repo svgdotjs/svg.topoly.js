@@ -1,4 +1,5 @@
 import {
+  G,
   Path,
   PathArray,
   PointArray,
@@ -6,16 +7,20 @@ import {
   Polyline,
   Number as SVGNumber,
   extend,
-  parser
+  parser,
 } from '@svgdotjs/svg.js'
 
 // Normalise attributes
 const normaliseAttributes = (attr) => {
-  for (var a in attr) {
-    if (!/fill|stroke|opacity|transform/.test(a)) { delete attr[a] }
+  const result = {}
+
+  for (const key in attr) {
+    if (/^(fill|stroke|opacity|transform)$/.test(key)) {
+      result[key] = attr[key]
+    }
   }
 
-  return attr
+  return result
 }
 
 const getParserPath = (pathArray) => {
@@ -28,56 +33,77 @@ const pathLength = (pathArray) => {
   return getParserPath(pathArray).getTotalLength()
 }
 
-extend(PathArray, {
-  // Convert path to poly
-  toPoly (sample = '1%') {
-    let points = []
-    let length = 0
-    let x = 0
-    let y = 0
+// Split the path array into subpaths at each moveto
+const splitSubPaths = (pathArray) => {
+  const subPaths = []
+  let current = []
 
-    // parse sample value
-    sample = new SVGNumber(sample)
-
-    // get total length
-    const total = pathLength(this)
-
-    let distance
-
-    // calculate sample distance
-    if (sample.unit === '%') {
-      // sample distance in %
-      distance = total * sample.value
-    } else if (sample.unit === 'px') {
-      // fixed sample distance in px
-      distance = sample.value
-    } else {
-      // specific number of samples
-      distance = total / sample.value
+  for (const segment of pathArray) {
+    // every moveto after the first starts a new subpath
+    if (segment[0] === 'M' && current.length) {
+      subPaths.push(current)
+      current = []
     }
 
-    // prepare arrays
-    const segmentsQueue = this.slice()
+    current.push(segment)
+  }
 
-    // prepare helpers functions
-    const addPoint = function (px, py) {
-      // get last point
-      const lastPoint = points[points.length - 1]
+  if (current.length) {
+    subPaths.push(current)
+  }
 
-      // when the last point doesn't equal the current point add the current point
-      if (!lastPoint || px !== lastPoint[0] || py !== lastPoint[1]) {
-        points.push([px, py])
-        x = px
-        y = py
-      }
+  return subPaths
+}
+
+// Convert a single subpath to a point array
+const pathToPoints = (pathArray, sample) => {
+  let points = []
+  let length = 0
+  let x = 0
+  let y = 0
+
+  // parse sample value
+  sample = new SVGNumber(sample)
+
+  // get total length
+  const total = pathLength(pathArray)
+
+  let distance
+
+  // calculate sample distance
+  if (sample.unit === '%') {
+    // sample distance in %
+    distance = total * sample.value
+  } else if (sample.unit === 'px') {
+    // fixed sample distance in px
+    distance = sample.value
+  } else {
+    // specific number of samples
+    distance = total / sample.value
+  }
+
+  // prepare arrays
+  const segmentsQueue = pathArray.slice()
+
+  // prepare helpers functions
+  const addPoint = function (px, py) {
+    // get last point
+    const lastPoint = points[points.length - 1]
+
+    // when the last point doesn't equal the current point add the current point
+    if (!lastPoint || px !== lastPoint[0] || py !== lastPoint[1]) {
+      points.push([px, py])
+      x = px
+      y = py
     }
+  }
 
-    const addSegmentPoint = function (segment) {
-      // don't bother processing path ends
-      if (segment[0] === 'Z') return
+  const addSegmentPoint = function (segment) {
+    // don't bother processing path ends
+    if (segment[0] === 'Z') return
 
-      // map segment to x and y
-      switch (segment[0]) {
+    // map segment to x and y
+    switch (segment[0]) {
       case 'M':
       case 'L':
       case 'T':
@@ -103,84 +129,105 @@ extend(PathArray, {
         x = segment[6]
         y = segment[7]
         break
-      }
-
-      // add point
-      addPoint(x, y)
     }
 
-    let lastSegment
-    let segmentIndex = 0
-    let subPath = this.slice(0, segmentIndex + 1)
-    let subPathLength = pathLength(subPath)
+    // add point
+    addPoint(x, y)
+  }
 
-    // sample through path
-    while (length < total) {
+  let lastSegment
+  let segmentIndex = 0
+  let subPath = new PathArray(pathArray.slice(0, segmentIndex + 1))
+  let subPathLength = pathLength(subPath)
 
-      // get segment index
-      while (subPathLength < length) {
-        ++segmentIndex
-        subPath = this.slice(0, segmentIndex + 1)
-        subPathLength = pathLength(subPath)
+  // sample through path
+  while (length < total) {
+    // get segment index
+    while (subPathLength < length) {
+      ++segmentIndex
+      subPath = new PathArray(pathArray.slice(0, segmentIndex + 1))
+      subPathLength = pathLength(subPath)
+    }
+
+    // get segment
+    const segment = pathArray[segmentIndex]
+
+    // new segment?
+    if (segment !== lastSegment) {
+      // add the segment we just left
+      if (lastSegment !== undefined) {
+        addSegmentPoint(lastSegment)
       }
 
-      // get segment
-      const segment = this[segmentIndex]
-
-      // new segment?
-      if (segment !== lastSegment) {
-        // add the segment we just left
-        if (lastSegment !== undefined) {
-          addSegmentPoint(lastSegment)
-        }
-
-        // add all segments which we just skipped
-        while (segmentsQueue.length && segmentsQueue[0] !== segment) {
-          addSegmentPoint(segmentsQueue.shift())
-        }
-
-        lastSegment = segment
+      // add all segments which we just skipped
+      while (segmentsQueue.length && segmentsQueue[0] !== segment) {
+        addSegmentPoint(segmentsQueue.shift())
       }
 
-      // add points in between when curving
-      switch (segment[0]) {
+      lastSegment = segment
+    }
+
+    // add points in between when curving
+    switch (segment[0]) {
       case 'C':
       case 'T':
       case 'S':
       case 'Q':
-      case 'A':
-        const point = getParserPath(this).getPointAtLength(length)
+      case 'A': {
+        const point = getParserPath(pathArray).getPointAtLength(length)
         addPoint(point.x, point.y)
         break
       }
-
-      // increment by sample value
-      length += distance
     }
 
-    let i = 0
-    let il = segmentsQueue.length
-    // add remaining segments we didn't pass while sampling
-    for (; i < il; ++i) {
-      addSegmentPoint(segmentsQueue[i])
-    }
-
-    // send out as point array
-    return new PointArray(points)
+    // increment by sample value
+    length += distance
   }
 
+  let i = 0
+  let il = segmentsQueue.length
+  // add remaining segments we didn't pass while sampling
+  for (; i < il; ++i) {
+    addSegmentPoint(segmentsQueue[i])
+  }
+
+  // send out as point array
+  return new PointArray(points)
+}
+
+extend(PathArray, {
+  // Convert path to poly
+  toPoly(sample = '1%') {
+    // split the path into its subpaths
+    const subPaths = splitSubPaths(this)
+
+    // convert every subpath to its own polygon or polyline
+    const polys = subPaths.map((subPath) => {
+      const Poly = subPath[subPath.length - 1][0] === 'Z' ? Polygon : Polyline
+      return new Poly().plot(pathToPoints(new PathArray(subPath), sample))
+    })
+
+    // return the polygon or polyline directly when there is only one subpath
+    if (polys.length === 1) {
+      return polys[0]
+    }
+
+    // group the polygons and polylines so the shape can be handled as a whole
+    const group = new G()
+    for (const poly of polys) {
+      group.add(poly)
+    }
+
+    return group
+  },
 })
 
 extend(Path, {
   // Convert path to poly
-  toPoly (sample = '1%', replace = true) {
-    // define type
-    const Poly = /z\s*$/i.test(this.attr('d')) ? Polygon : Polyline
-
-    const pointArray = this.array().toPoly(sample)
-
-    // create poly
-    const poly = new Poly().plot(pointArray)
+  toPoly(sample = '1%', replace = true) {
+    // convert path to poly
+    const poly = this.array()
+      .toPoly(sample)
       .attr(normaliseAttributes(this.attr()))
 
     // insert poly
@@ -189,6 +236,5 @@ extend(Path, {
     }
 
     return poly
-  }
-
+  },
 })
