@@ -84,7 +84,20 @@ path.toPoly(400)
 
 ### Types
 
-If a path is closed (ending with a `z`) a `SVG.Polygon` will be generated, otherwise a `SVG.Polyline`.
+If a subpath is closed (ending with a `z`) a `SVG.Polygon` will be generated, otherwise a `SVG.Polyline`.
+
+### Merged paths
+
+If the path data contains more than one subpath (e.g. `M..Z M..Z`), every subpath is
+converted on its own. The results are wrapped in a `<g>` so the converted shape can
+still be moved and styled as a whole:
+
+```javascript
+var group = path.toPoly()
+// -> SVG.G containing one polygon/polyline per subpath
+```
+
+A path with a single subpath is unchanged and returns a plain `SVG.Polygon` / `SVG.Polyline`.
 
 ### SVG.PathArray
 
@@ -93,6 +106,9 @@ The `toPoly()` method on a `SVG.Path` is a proxy to the same method on `SVG.Path
 ```javascript
 var pathArray = new SVG.PathArray(data)
 
-var pointArray = path.toPoly('1%')
+var pointArray = pathArray.toPoly('1%')
 // -> returns an instance of SVG.PointArray
+
+var pointArrays = new SVG.PathArray('M..Z M..Z').toPoly('1%')
+// -> returns an array of SVG.PointArray, one per subpath
 ```
