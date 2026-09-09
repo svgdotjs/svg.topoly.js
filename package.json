@@ -2,22 +2,39 @@
   "name": "@svgdotjs/svg.topoly.js",
   "version": "1.0.3",
   "description": "An extension for svg.js to convert shapes to polygons",
-  "main": "dist/svg.topoly.node.js",
-  "unpkg": "dist/svg.topoly.min.js",
-  "jsdelivr": "dist/svg.topoly.min.js",
-  "browser": "src/svg.topoly.js",
-  "module": "src/svg.topoly.js",
+  "type": "module",
+  "packageManager": "pnpm@11.26.0",
+  "main": "dist/svg.topoly.js",
+  "module": "dist/svg.topoly.mjs",
+  "exports": {
+    ".": {
+      "browser": {
+        "types": "./dist/svg.topoly.d.mts",
+        "default": "./dist/svg.topoly.mjs"
+      },
+      "import": {
+        "types": "./dist/svg.topoly.d.mts",
+        "default": "./dist/svg.topoly.mjs"
+      },
+      "require": {
+        "types": "./dist/svg.topoly.d.ts",
+        "default": "./dist/svg.topoly.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "unpkg": "dist/svg.topoly.js",
+  "jsdelivr": "dist/svg.topoly.js",
   "files": [
     "/dist",
-    "/src",
-    "/svg.topoly.js.d.ts"
+    "!/dist/*.zip"
   ],
   "keywords": [
     "svg.js"
   ],
   "bugs": "https://github.com/svgdotjs/svg.topoly.js/issues",
   "license": "MIT",
-  "typings": "./svg.topoly.js.d.ts",
+  "typings": "./dist/svg.topoly.d.ts",
   "author": {
     "name": "Wout Fierens"
   },
@@ -32,48 +49,23 @@
   "homepage": "https://github.com/svgdotjs/svg.topoly.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/svgdotjs/svg.topoly.js.git"
+    "url": "git+https://github.com/svgdotjs/svg.topoly.js.git"
   },
   "scripts": {
-    "build": "npm run fix && npm run rollup",
-    "fix": "npx eslint ./src --fix",
-    "lint": "npx eslint ./src",
-    "rollup": "npx rollup -c .config/rollup.config.js",
-    "zip": "zip -j dist/svg.topoly.js.zip -- LICENSE README.md dist/svg.topoly.js dist/svg.topoly.js.map dist/svg.topoly.min.js dist/svg.topoly.min.js.map",
-    "prepublishOnly": "rm -rf ./dist && npm run build",
-    "postpublish": "npm run zip"
+    "build": "pnpm fix && tsc && vite build",
+    "fix": "oxfmt --write . && oxlint -D correctness --fix .",
+    "lint": "oxfmt --check . && oxlint -D correctness .",
+    "prepublishOnly": "rm -rf ./dist && pnpm build && pnpm zip",
+    "zip": "zip -j dist/svg.topoly.js.zip -- LICENSE README.md dist/svg.topoly.js"
   },
-  "engines": {
-    "node": ">= 0.8.0"
+  "peerDependencies": {
+    "@svgdotjs/svg.js": "^3.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-external-helpers": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/polyfill": "^7.2.5",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/runtime": "^7.2.0",
-    "@babel/runtime-corejs2": "^7.2.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.12.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.1",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "jasmine": "^3.3.0",
-    "jasmine-core": "^3.3.0",
-    "rollup": "^1.1.0",
-    "rollup-plugin-babel": "^4.3.1",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-filesize": "^6.0.0",
-    "rollup-plugin-multi-entry": "^2.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-terser": "^4.0.2",
-    "rollup-plugin-uglify": "^6.0.1",
-    "rollup-plugin-uglify-es": "0.0.1"
-  },
-  "dependencies": {
-    "@svgdotjs/svg.js": "^3.0.10"
+    "@svgdotjs/svg.js": "^3.2.8",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
   }
 }

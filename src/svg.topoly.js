@@ -12,7 +12,9 @@ import {
 // Normalise attributes
 const normaliseAttributes = (attr) => {
   for (var a in attr) {
-    if (!/fill|stroke|opacity|transform/.test(a)) { delete attr[a] }
+    if (!/fill|stroke|opacity|transform/.test(a)) {
+      delete attr[a]
+    }
   }
 
   return attr
@@ -30,7 +32,7 @@ const pathLength = (pathArray) => {
 
 extend(PathArray, {
   // Convert path to poly
-  toPoly (sample = '1%') {
+  toPoly(sample = '1%') {
     let points = []
     let length = 0
     let x = 0
@@ -78,31 +80,31 @@ extend(PathArray, {
 
       // map segment to x and y
       switch (segment[0]) {
-      case 'M':
-      case 'L':
-      case 'T':
-        x = segment[1]
-        y = segment[2]
-        break
-      case 'H':
-        x = segment[1]
-        break
-      case 'V':
-        y = segment[1]
-        break
-      case 'C':
-        x = segment[5]
-        y = segment[6]
-        break
-      case 'S':
-      case 'Q':
-        x = segment[3]
-        y = segment[4]
-        break
-      case 'A':
-        x = segment[6]
-        y = segment[7]
-        break
+        case 'M':
+        case 'L':
+        case 'T':
+          x = segment[1]
+          y = segment[2]
+          break
+        case 'H':
+          x = segment[1]
+          break
+        case 'V':
+          y = segment[1]
+          break
+        case 'C':
+          x = segment[5]
+          y = segment[6]
+          break
+        case 'S':
+        case 'Q':
+          x = segment[3]
+          y = segment[4]
+          break
+        case 'A':
+          x = segment[6]
+          y = segment[7]
+          break
       }
 
       // add point
@@ -116,7 +118,6 @@ extend(PathArray, {
 
     // sample through path
     while (length < total) {
-
       // get segment index
       while (subPathLength < length) {
         ++segmentIndex
@@ -144,14 +145,15 @@ extend(PathArray, {
 
       // add points in between when curving
       switch (segment[0]) {
-      case 'C':
-      case 'T':
-      case 'S':
-      case 'Q':
-      case 'A':
-        const point = getParserPath(this).getPointAtLength(length)
-        addPoint(point.x, point.y)
-        break
+        case 'C':
+        case 'T':
+        case 'S':
+        case 'Q':
+        case 'A': {
+          const point = getParserPath(this).getPointAtLength(length)
+          addPoint(point.x, point.y)
+          break
+        }
       }
 
       // increment by sample value
@@ -168,19 +170,19 @@ extend(PathArray, {
     // send out as point array
     return new PointArray(points)
   }
-
 })
 
 extend(Path, {
   // Convert path to poly
-  toPoly (sample = '1%', replace = true) {
+  toPoly(sample = '1%', replace = true) {
     // define type
     const Poly = /z\s*$/i.test(this.attr('d')) ? Polygon : Polyline
 
     const pointArray = this.array().toPoly(sample)
 
     // create poly
-    const poly = new Poly().plot(pointArray)
+    const poly = new Poly()
+      .plot(pointArray)
       .attr(normaliseAttributes(this.attr()))
 
     // insert poly
@@ -190,5 +192,4 @@ extend(Path, {
 
     return poly
   }
-
 })

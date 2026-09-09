@@ -1,6 +1,6 @@
 import { PathArray, PointArray, Polygon, Polyline } from '@svgdotjs/svg.js'
 
-declare module "@svgdotjs/svg.js" {
+declare module '@svgdotjs/svg.js' {
   interface PathArray {
     toPoly(sample?: string | number): PointArray
   }
@@ -10,3 +10,5 @@ declare module "@svgdotjs/svg.js" {
     toPoly(sample?: string | number, replace?: boolean): Polyline
   }
 }
+
+export {}
